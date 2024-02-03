@@ -1,9 +1,13 @@
+import { useQuery } from '@tanstack/react-query'
 import { Helmet } from 'react-helmet-async'
 
+import { getOrders } from '@/api/get-orders'
 import { Pagination } from '@/components/pagination'
+import { Skeleton } from '@/components/ui/skeleton'
 import {
   Table,
   TableBody,
+  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -13,6 +17,11 @@ import { OrderTableFilters } from './order-table-filters'
 import { OrderTableRow } from './order-table-row'
 
 export function Orders() {
+  const { data: result } = useQuery({
+    queryKey: ['orders'],
+    queryFn: getOrders,
+  })
+
   return (
     <>
       <Helmet title="Pedidos" />
@@ -38,9 +47,38 @@ export function Orders() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {Array.from({ length: 10 }).map((_, i) => {
-                  return <OrderTableRow key={i} />
-                })}
+                {result
+                  ? result.orders.map((order) => {
+                      return <OrderTableRow key={order.orderId} order={order} />
+                    })
+                  : Array.from({ length: 10 }).map((_, index) => (
+                      <TableRow key={index}>
+                        <TableCell className="w-[64px]">
+                          <Skeleton className="h-8 w-8" />
+                        </TableCell>
+                        <TableCell className="w-[140px]">
+                          <Skeleton className="h-8 w-24" />
+                        </TableCell>
+                        <TableCell className="w-[180px]">
+                          <Skeleton className="h-8 w-24" />
+                        </TableCell>
+                        <TableCell className="w-[140px]">
+                          <Skeleton className="h-8 w-24" />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className="h-8 w-full" />
+                        </TableCell>
+                        <TableCell>
+                          <Skeleton className="h-8 w-full" />
+                        </TableCell>
+                        <TableCell className="w-[164px]">
+                          <Skeleton className="h-8 w-24" />
+                        </TableCell>
+                        <TableCell className="w-[132px]">
+                          <Skeleton className="h-8 w-24" />
+                        </TableCell>
+                      </TableRow>
+                    ))}
               </TableBody>
             </Table>
           </div>
